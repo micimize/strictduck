@@ -8,7 +8,7 @@ export function shouldImplement({
 }
 
 export default class StrictDuck {
-    constructor(instance, ...interfaces=[]){
+    constructor(instance, ...interfaces){
         Object.assign(this, instance)
         interfaces.forEach(
             i => typeof(i == 'function') ?
@@ -23,8 +23,8 @@ export function extension({
 }){
     let classDict = {}
     classDict[name] = class extends parent {
-        constructor(instance, ...otherInterfaces=[]){
-            super(instance, ...interfaces=[], ...otherInterfaces)
+        constructor(instance, ...otherInterfaces){
+            super(instance, ...interfaces, ...otherInterfaces)
         }
     }
     return classDict[name]
