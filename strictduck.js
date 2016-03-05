@@ -18,13 +18,14 @@ export default class StrictDuck {
     }
 }
 
-export function extension({
-    name, parent=StrictDuck, interfaces=[]
+export function extend({
+    name, parent=StrictDuck, interfaces=[], methods=[]
 }){
     let classDict = {}
     classDict[name] = class extends parent {
         constructor(instance, ...otherInterfaces){
-            super(instance, ...interfaces, ...otherInterfaces)
+            super(instance, {name, methods},
+                  ...interfaces, ...otherInterfaces)
         }
     }
     return classDict[name]
