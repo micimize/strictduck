@@ -1,15 +1,15 @@
 {
-  "name": "strictduck-server",
+  "name": "strictduck-strictduck",
   "version": "0.0.1",
-  "description": "strictduck-server is basically just a stub",
+  "description": "strictduck-strictduck is basically just a stub",
   "main": "dist/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" &&   exit 1",
-    "dist": "node-simple-webpacker --task dist --entry ./server.js --out ./dist/index.js"
+    "dist": "node-simple-webpacker --task dist --entry ./strictduck.js --out ./dist/index.js"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/strictduck/server.git"
+    "url": "git+https://github.com/strictduck/strictduck.git"
   },
   "author": "Michael Joseph Rosenthal <rosenthalm93@gmail.com>",
   "license": "Apache-2.0",
@@ -17,9 +17,12 @@
     "node": ">=v5.4.1 <6.0"
   },
   "bugs": {
-    "url": "https://github.com/strictduck/server/issues"
+    "url": "https://github.com/strictduck/strictduck/issues"
   },
-  "homepage": "https://github.com/strictduck/server#readme",
+  "homepage": "https://github.com/strictduck/strictduck#readme",
+  "dependencies": {
+    "Duckface": "github:openraffler/duckface.js"
+  },
   "devDependencies": {
     "node-simple-webpacker": "github:michaeljosephrosenthal/node-simple-webpacker"
   }
