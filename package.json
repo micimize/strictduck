@@ -1,11 +1,12 @@
 {
-  "name": "strictduck-strictduck",
+  "name": "strictduck",
   "version": "0.0.1",
-  "description": "strictduck-strictduck is basically just a stub",
+  "description": "strictduck is basically just a stub",
   "main": "dist/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" &&   exit 1",
-    "dist": "node-simple-webpacker --task dist --entry ./strictduck.js --out ./dist/index.js"
+    "dist": "node-simple-webpacker --task dist --entry ./src/index.js --out ./dist/index.js",
+    "watch-and-dist": "node-simple-webpacker --entry ./src/index.js --out ./dist/index.js"
   },
   "repository": {
     "type": "git",
@@ -21,7 +22,9 @@
   },
   "homepage": "https://github.com/strictduck/strictduck#readme",
   "dependencies": {
-    "Duckface": "github:openraffler/duckface.js"
+    "Duckface": "github:openraffler/duckface.js",
+    "bottlejs": "^1.2.3",
+    "get-prototype-chain": "^1.0.1"
   },
   "devDependencies": {
     "node-simple-webpacker": "github:michaeljosephrosenthal/node-simple-webpacker"
