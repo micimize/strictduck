@@ -1,5 +1,5 @@
 import Duckface from 'Duckface/src/duckface'
-import completeAssignToThis from './completeAssign'
+import { nameClass, completeAssignToThis } from './utils'
 
 export function shouldImplement({
     name = 'strictduckInterface', methods = []
@@ -22,16 +22,17 @@ export default class StrictDuck {
 export function extend({
     name, parent=StrictDuck, interfaces=[], methods=[]
 }){
-    let classDict = {}
-    classDict[name] = class extends parent {
-        constructor(instance, ...otherInterfaces){
-            super(
-                instance, {name, methods},
-                ...interfaces, ...otherInterfaces
-            )
+    return nameClass({
+        name: name || parent.name,
+        Class: class extends parent {
+            constructor(instance, ...otherInterfaces){
+                super(
+                    instance, {name, methods},
+                    ...interfaces, ...otherInterfaces
+                )
+            }
         }
-    }
-    return classDict[name]
+    })
 }
 
 export const Main = extend({ name: 'Main', methods: ['main'] })

@@ -2,7 +2,7 @@ import getPrototypeChain from 'get-prototype-chain'
 
 export function satisfies({provider, dependency}){
     return getPrototypeChain(provider)
-        .filter(p => p instanceof dependency || p.constructor.name == dependency).length > 0
+        .filter(p => p == dependency || p instanceof dependency || p.constructor.name == dependency).length > 0
 }
 
 export function findSatisfier({container, dependency}){

@@ -1,4 +1,4 @@
-export default function completeAssignToThis(source) {
+export function completeAssignToThis(source) {
     this.__proto__ = source.__proto__
     let descriptors = Object.keys(source).reduce((descriptors, key) => {
         descriptors[key] = Object.getOwnPropertyDescriptor(source, key);
@@ -12,4 +12,11 @@ export default function completeAssignToThis(source) {
         }
     });
     Object.defineProperties(this, descriptors);
+}
+
+export function nameClass({name, Class}){
+    let classDict = {}
+    classDict[name] = Class
+    Object.defineProperty(classDict[name], 'name', {value: name})
+    return classDict[name]
 }
