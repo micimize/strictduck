@@ -18,7 +18,7 @@ module.exports =
 /******/ 	
 /******/ 	
 /******/ 	var hotApplyOnUpdate = true;
-/******/ 	var hotCurrentHash = "0fafe60fa7646d3833f8"; // eslint-disable-line no-unused-vars
+/******/ 	var hotCurrentHash = "68062a1247f30115ae3d"; // eslint-disable-line no-unused-vars
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentParents = []; // eslint-disable-line no-unused-vars
 /******/ 	
@@ -693,7 +693,7 @@ module.exports =
 	
 	var _duckface2 = _interopRequireDefault(_duckface);
 	
-	var _utils = __webpack_require__(15);
+	var _utils = __webpack_require__(6);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
@@ -774,7 +774,44 @@ module.exports =
 	module.exports = require("Duckface/src/duckface");
 
 /***/ },
-/* 6 */,
+/* 6 */
+/***/ function(module, exports) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	exports.completeAssignToThis = completeAssignToThis;
+	exports.nameClass = nameClass;
+	function completeAssignToThis(source) {
+	    this.__proto__ = source.__proto__;
+	    this.prototype = source.prototype;
+	    var descriptors = Object.keys(source).reduce(function (descriptors, key) {
+	        descriptors[key] = Object.getOwnPropertyDescriptor(source, key);
+	        return descriptors;
+	    }, {});
+	    // by default, Object.assign copies enumerable Symbols too
+	    Object.getOwnPropertySymbols(source).forEach(function (sym) {
+	        var descriptor = Object.getOwnPropertyDescriptor(source, sym);
+	        if (descriptor.enumerable) {
+	            descriptors[sym] = descriptor;
+	        }
+	    });
+	    Object.defineProperties(this, descriptors);
+	}
+	
+	function nameClass(_ref) {
+	    var name = _ref.name;
+	    var Class = _ref.Class;
+	
+	    var classDict = {};
+	    classDict[name] = Class;
+	    Object.defineProperty(classDict[name], 'name', { value: name });
+	    return classDict[name];
+	}
+
+/***/ },
 /* 7 */
 /***/ function(module, exports, __webpack_require__) {
 
@@ -806,12 +843,11 @@ module.exports =
 	    var container = _ref2.container;
 	    var dependency = _ref2.dependency;
 	
-	    var providers = Object.values(container);
-	    var satisfierArr = providers.filter(function (provider) {
-	        return satisfies({ provider: provider, dependency: dependency });
+	    var satisfierArr = Object.keys(container.providers).filter(function (key) {
+	        return satisfies({ provider: container.providers[key], dependency: dependency });
 	    });
 	    var satisfier = satisfierArr.length && satisfierArr[0];
-	    return satisfier || Error(dependency + ' is unsatsified!');
+	    return satisfier ? container[satisfier] : Error(dependency.name + ' is unsatsified!');
 	}
 	
 	function resolve(_ref3) {
@@ -819,7 +855,7 @@ module.exports =
 	    var dependencies = _ref3.dependencies;
 	
 	    return dependencies.reduce(function (resolved, dependency) {
-	        resolved[dependency] = findSatisfier({
+	        resolved[dependency.name || dependency.constructor.name] = findSatisfier({
 	            container: container,
 	            dependency: dependency
 	        });
@@ -855,7 +891,7 @@ module.exports =
 	
 	var _strictduck2 = _interopRequireDefault(_strictduck);
 	
-	var _utils = __webpack_require__(15);
+	var _utils = __webpack_require__(6);
 	
 	var _getPrototypeChain = __webpack_require__(8);
 	
@@ -919,10 +955,9 @@ module.exports =
 	Object.defineProperty(exports, "__esModule", {
 	    value: true
 	});
+	exports.Provider = undefined;
 	
 	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-	
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 	
 	exports.default = provides;
 	
@@ -934,11 +969,15 @@ module.exports =
 	
 	var _strictduck2 = _interopRequireDefault(_strictduck);
 	
+	var _implement = __webpack_require__(13);
+	
+	var _implement2 = _interopRequireDefault(_implement);
+	
 	var _resolve = __webpack_require__(7);
 	
 	var _resolve2 = _interopRequireDefault(_resolve);
 	
-	var _utils = __webpack_require__(15);
+	var _utils = __webpack_require__(6);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
@@ -949,6 +988,8 @@ module.exports =
 	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 	
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+	
+	var Provider = exports.Provider = (0, _strictduck.extend)({ name: 'Provider', methods: ['provide'] });
 	
 	function provides(_ref) {
 	    var name = _ref.name;
@@ -964,21 +1005,29 @@ module.exports =
 	            _inherits(Class, _parent);
 	
 	            function Class() {
+	                var _Object$getPrototypeO;
+	
 	                _classCallCheck(this, Class);
 	
-	                return _possibleConstructorReturn(this, Object.getPrototypeOf(Class).apply(this, arguments));
-	            }
+	                for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+	                    args[_key] = arguments[_key];
+	                }
 	
-	            _createClass(Class, [{
-	                key: 'provide',
-	                value: function provide(_ref2) {
+	                var _this = _possibleConstructorReturn(this, (_Object$getPrototypeO = Object.getPrototypeOf(Class)).call.apply(_Object$getPrototypeO, [this].concat(args)));
+	
+	                _this.provide = function provide(_ref2) {
 	                    var container = _ref2.container;
 	
-	                    var args = _objectWithoutProperties(_ref2, ['container']);
+	                    var kwargs = _objectWithoutProperties(_ref2, ['container']);
 	
-	                    return provider(_extends({}, (0, _resolve2.default)({ container: container, dependencies: dependencies }), args));
-	                }
-	            }]);
+	                    for (var _len2 = arguments.length, pargs = Array(_len2 > 1 ? _len2 - 1 : 0), _key2 = 1; _key2 < _len2; _key2++) {
+	                        pargs[_key2 - 1] = arguments[_key2];
+	                    }
+	
+	                    return provider.bind(this).apply(undefined, [_extends({}, (0, _resolve2.default)({ container: container, dependencies: dependencies }), kwargs)].concat(pargs));
+	                }.bind(_this);
+	                return _this;
+	            }
 	
 	            return Class;
 	        }(parent)
@@ -1001,17 +1050,23 @@ module.exports =
 	    value: true
 	});
 	
-	var _bottlejs = __webpack_require__(11);
-	
-	var _bottlejs2 = _interopRequireDefault(_bottlejs);
+	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 	
 	var _getPrototypeChain = __webpack_require__(8);
 	
 	var _getPrototypeChain2 = _interopRequireDefault(_getPrototypeChain);
 	
+	var _bottlejs = __webpack_require__(11);
+	
+	var _bottlejs2 = _interopRequireDefault(_bottlejs);
+	
 	var _depends = __webpack_require__(9);
 	
 	var _depends2 = _interopRequireDefault(_depends);
+	
+	var _resolve = __webpack_require__(7);
+	
+	var _resolve2 = _interopRequireDefault(_resolve);
 	
 	var _implement = __webpack_require__(13);
 	
@@ -1029,23 +1084,48 @@ module.exports =
 	
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 	
+	function materializer(service) {
+	    return typeof service == 'function' ? function (container) {
+	        return console.log(service) || new service({ container: container });
+	    } : function (_) {
+	        return service;
+	    };
+	}
+	
 	var Composit = function (_StrictDuck) {
 	    _inherits(Composit, _StrictDuck);
 	
-	    function Composit() {
+	    function Composit(_ref) {
+	        var _ref$main = _ref.main;
+	        var _ref$main$Class = _ref$main.Class;
+	        var mainClass = _ref$main$Class === undefined ? _strictduck.Main : _ref$main$Class;
+	        var _ref$main$method = _ref$main.method;
+	        var mainMethod = _ref$main$method === undefined ? 'main' : _ref$main$method;
+	
 	        _classCallCheck(this, Composit);
 	
-	        for (var _len = arguments.length, services = Array(_len), _key = 0; _key < _len; _key++) {
-	            services[_key] = arguments[_key];
+	        var providerMap = {};
+	
+	        for (var _len = arguments.length, services = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+	            services[_key - 1] = arguments[_key];
 	        }
 	
 	        var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Composit).call(this, services.reduce(function (context, service) {
-	            console.log(service);
-	            context.factory(service.constructor.name, (0, _depends2.default)({ context: context, service: service }));
+	            var name = service.name || service.constructor.name;
+	            providerMap[name] = service;
+	            context.factory(name, materializer(service));
 	            return context;
 	        }, new _bottlejs2.default())));
 	
-	        _this.main = (0, _depends.findSatisfier)({ this: this, Main: _strictduck.Main }).main;
+	        _this.value('providers', providerMap);
+	        var mainSatisfier = (0, _resolve.findSatisfier)({ container: _this.container, dependency: mainClass });
+	        _this.main = function (kwargs) {
+	            for (var _len2 = arguments.length, args = Array(_len2 > 1 ? _len2 - 1 : 0), _key2 = 1; _key2 < _len2; _key2++) {
+	                args[_key2 - 1] = arguments[_key2];
+	            }
+	
+	            return mainSatisfier[mainMethod].apply(mainSatisfier, [_extends({ container: _this.container }, kwargs)].concat(args));
+	        };
 	        return _this;
 	    }
 	
@@ -1069,7 +1149,7 @@ module.exports =
 	
 	var _strictduck3 = _interopRequireDefault(_strictduck2);
 	
-	var _utils = __webpack_require__(15);
+	var _utils = __webpack_require__(6);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
@@ -1120,43 +1200,6 @@ module.exports =
 	    return function (overrides) {
 	        return fn(Object.assign({}, defaults, overrides));
 	    };
-	}
-
-/***/ },
-/* 15 */
-/***/ function(module, exports) {
-
-	'use strict';
-	
-	Object.defineProperty(exports, "__esModule", {
-	    value: true
-	});
-	exports.completeAssignToThis = completeAssignToThis;
-	exports.nameClass = nameClass;
-	function completeAssignToThis(source) {
-	    this.__proto__ = source.__proto__;
-	    var descriptors = Object.keys(source).reduce(function (descriptors, key) {
-	        descriptors[key] = Object.getOwnPropertyDescriptor(source, key);
-	        return descriptors;
-	    }, {});
-	    // by default, Object.assign copies enumerable Symbols too
-	    Object.getOwnPropertySymbols(source).forEach(function (sym) {
-	        var descriptor = Object.getOwnPropertyDescriptor(source, sym);
-	        if (descriptor.enumerable) {
-	            descriptors[sym] = descriptor;
-	        }
-	    });
-	    Object.defineProperties(this, descriptors);
-	}
-	
-	function nameClass(_ref) {
-	    var name = _ref.name;
-	    var Class = _ref.Class;
-	
-	    var classDict = {};
-	    classDict[name] = Class;
-	    Object.defineProperty(classDict[name], 'name', { value: name });
-	    return classDict[name];
 	}
 
 /***/ }

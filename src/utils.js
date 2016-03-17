@@ -1,5 +1,6 @@
 export function completeAssignToThis(source) {
     this.__proto__ = source.__proto__
+    this.prototype = source.prototype
     let descriptors = Object.keys(source).reduce((descriptors, key) => {
         descriptors[key] = Object.getOwnPropertyDescriptor(source, key);
         return descriptors;

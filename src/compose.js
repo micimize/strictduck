@@ -1,25 +1,34 @@
-import Bottle from 'bottlejs'
 import getPrototypeChain from 'get-prototype-chain'
-import depends, { findSatisfier } from './depends'
+import Bottle from 'bottlejs'
+import depends from './depends'
+import resolve, { findSatisfier } from './resolve'
 import implement from './implement'
 import StrictDuck, { Main } from './strictduck'
 
+function materializer(service){
+    return (typeof(service) == 'function') ?
+        (container => console.log(service) || new service({container})) :
+        _ => service
+}
+
 class Composit extends StrictDuck {
-    constructor(...services){
+    constructor({main: {Class: mainClass = Main, method: mainMethod = 'main'}}, ...services){
+        let providerMap = {}
         super(
             services.reduce(
                 (context, service) => {
-                    console.log(service)
-                    context.factory(
-                        service.constructor.name,
-                        depends({context, service})
-                    )
+                    let name = service.name || service.constructor.name
+                    providerMap[name] = service
+                    context.factory(name, materializer(service))
                     return context
                 }
                 , new Bottle()
             )
          )
-         this.main = findSatisfier({ this, Main }).main
+         this.value('providers', providerMap)
+         let mainSatisfier = findSatisfier({ container: this.container, dependency: mainClass })
+         this.main = (kwargs, ...args) => mainSatisfier[mainMethod]({container: this.container, ...kwargs}, ...args)
     }
 }
+
 export default implement({ strictduck: Main, withClass: Composit })

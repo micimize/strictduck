@@ -1,7 +1,10 @@
 import bottle from 'bottlejs'
-import StrictDuck from './strictduck'
+import StrictDuck, { extend } from './strictduck'
+import implement from './implement'
 import resolve from './resolve'
 import { nameClass } from './utils'
+
+export const Provider = extend({ name: 'Provider', methods: ['provide'] })
 
 export default function provides({
     name, provider,
@@ -11,11 +14,14 @@ export default function provides({
     return nameClass({
         name: name || parent.name,
         Class: class extends parent {
-            provide({container, ...args}){
-                return provider({
-                    ...resolve({container, dependencies}),
-                    ...args
-                })
+            constructor(...args){
+                super(...args)
+                this.provide = function provide({container, ...kwargs}, ...pargs){
+                    return provider.bind(this)({
+                        ...resolve({container, dependencies}),
+                        ...kwargs
+                    }, ...pargs)
+                }.bind(this)
             }
         }
     })

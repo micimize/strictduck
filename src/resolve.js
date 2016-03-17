@@ -6,16 +6,15 @@ export function satisfies({provider, dependency}){
 }
 
 export function findSatisfier({container, dependency}){
-    let providers = Object.values(container)
-    let satisfierArr = providers.filter(provider => satisfies({provider, dependency}))
+    let satisfierArr = Object.keys(container.providers).filter(key => satisfies({provider: container.providers[key], dependency}))
     let satisfier = satisfierArr.length && satisfierArr[0]
-    return satisfier || Error(`${dependency} is unsatsified!`)
+    return satisfier ? container[satisfier] : Error(`${dependency.name} is unsatsified!`)
 }
 
 export default function resolve({container, dependencies}){
     return dependencies.reduce(
         (resolved, dependency) => {
-        resolved[dependency] = findSatisfier({
+        resolved[dependency.name || dependency.constructor.name] = findSatisfier({
             container,
             dependency
         })
