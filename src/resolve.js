@@ -21,3 +21,9 @@ export default function resolve({container, dependencies}){
         return resolved
     }, {})
 }
+
+export function objectContainsOnly({strictduck, object}){
+    return Object.keys(object).filter(
+        k => !satisfies({ provider: object[k], dependency: strictduck })
+    ).length == 0
+}

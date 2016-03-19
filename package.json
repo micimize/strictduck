@@ -24,7 +24,9 @@
   "dependencies": {
     "Duckface": "github:openraffler/duckface.js",
     "bottlejs": "^1.2.3",
-    "get-prototype-chain": "^1.0.1"
+    "flatten-prototypes": "^4.0.0",
+    "get-prototype-chain": "^1.0.1",
+    "proto-extend": "^1.0.0"
   },
   "devDependencies": {
     "node-simple-webpacker": "github:michaeljosephrosenthal/node-simple-webpacker"

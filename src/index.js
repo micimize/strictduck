@@ -8,3 +8,6 @@ export Composit from './compose'
 
 export implement from './implement'
 export implementable from './implementable'
+
+export typedMap from './typedMap'
+

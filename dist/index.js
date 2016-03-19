@@ -18,7 +18,7 @@ module.exports =
 /******/ 	
 /******/ 	
 /******/ 	var hotApplyOnUpdate = true;
-/******/ 	var hotCurrentHash = "68062a1247f30115ae3d"; // eslint-disable-line no-unused-vars
+/******/ 	var hotCurrentHash = "5c9c7a38d5c78c55e7ee"; // eslint-disable-line no-unused-vars
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentParents = []; // eslint-disable-line no-unused-vars
 /******/ 	
@@ -624,7 +624,7 @@ module.exports =
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-	exports.implementable = exports.implement = exports.Composit = exports.provides = exports.depends = exports.resolve = exports.default = undefined;
+	exports.typedMap = exports.implementable = exports.implement = exports.Composit = exports.provides = exports.depends = exports.resolve = exports.default = undefined;
 	
 	var _strictduck = __webpack_require__(4);
 	
@@ -640,19 +640,19 @@ module.exports =
 	
 	var _strictduck2 = _interopRequireDefault(_strictduck);
 	
-	var _resolve2 = __webpack_require__(7);
+	var _resolve2 = __webpack_require__(8);
 	
 	var _resolve = _interopRequireWildcard(_resolve2);
 	
-	var _depends2 = __webpack_require__(9);
+	var _depends2 = __webpack_require__(10);
 	
 	var _depends3 = _interopRequireDefault(_depends2);
 	
-	var _provides2 = __webpack_require__(10);
+	var _provides2 = __webpack_require__(11);
 	
 	var _provides3 = _interopRequireDefault(_provides2);
 	
-	var _compose = __webpack_require__(12);
+	var _compose = __webpack_require__(14);
 	
 	var _compose2 = _interopRequireDefault(_compose);
 	
@@ -660,9 +660,13 @@ module.exports =
 	
 	var _implement3 = _interopRequireDefault(_implement2);
 	
-	var _implementable2 = __webpack_require__(14);
+	var _implementable2 = __webpack_require__(15);
 	
 	var _implementable3 = _interopRequireDefault(_implementable2);
+	
+	var _typedMap2 = __webpack_require__(16);
+	
+	var _typedMap3 = _interopRequireDefault(_typedMap2);
 	
 	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 	
@@ -675,6 +679,7 @@ module.exports =
 	exports.Composit = _compose2.default;
 	exports.implement = _implement3.default;
 	exports.implementable = _implementable3.default;
+	exports.typedMap = _typedMap3.default;
 
 /***/ },
 /* 4 */
@@ -688,6 +693,10 @@ module.exports =
 	exports.Main = undefined;
 	exports.shouldImplement = shouldImplement;
 	exports.extend = extend;
+	
+	var _getPrototypeChain = __webpack_require__(9);
+	
+	var _getPrototypeChain2 = _interopRequireDefault(_getPrototypeChain);
 	
 	var _duckface = __webpack_require__(5);
 	
@@ -718,19 +727,20 @@ module.exports =
 	}
 	
 	var StrictDuck = function StrictDuck(instance) {
-	    var _this = this;
-	
 	    _classCallCheck(this, StrictDuck);
 	
-	    _utils.completeAssignToThis.bind(this)(instance);
+	    var hack = function hack() {};
+	    Object.setPrototypeOf(hack, Object.getPrototypeOf(this));
+	    _utils.completeAssignToThis.bind(hack)(instance);
 	
 	    for (var _len = arguments.length, interfaces = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
 	        interfaces[_key - 1] = arguments[_key];
 	    }
 	
 	    interfaces.forEach(function (i) {
-	        return typeof i == 'function' ? i(_this) : shouldImplement(i)(_this);
+	        return typeof i == 'function' ? i(hack) : shouldImplement(i)(hack);
 	    });
+	    return hack;
 	};
 	
 	exports.default = StrictDuck;
@@ -775,7 +785,7 @@ module.exports =
 
 /***/ },
 /* 6 */
-/***/ function(module, exports) {
+/***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
@@ -784,11 +794,37 @@ module.exports =
 	});
 	exports.completeAssignToThis = completeAssignToThis;
 	exports.nameClass = nameClass;
+	
+	var _getPrototypeChain = __webpack_require__(9);
+	
+	var _getPrototypeChain2 = _interopRequireDefault(_getPrototypeChain);
+	
+	var _protoExtend = __webpack_require__(17);
+	
+	var _protoExtend2 = _interopRequireDefault(_protoExtend);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	function extendFromBase(objProto, baseProto) {
+	    if (Object.getPrototypeOf(objProto) == null || (0, _getPrototypeChain2.default)(baseProto).indexOf(objProto) > -1) {
+	        return baseProto;
+	    } else {
+	        Object.setPrototypeOf(objProto, extendFromBase(objProto.__proto__, baseProto));
+	        return objProto;
+	    }
+	}
+	function extendThisFromBase(base) {
+	    if (Object.getPrototypeOf(this) != null) {
+	        Object.setPrototypeOf(this, extendFromBase(Object.getPrototypeOf(this), Object.getPrototypeOf(base)));
+	    } else {
+	        Object.setPrototypeOf(this, Object.getPrototypeOf(base));
+	    }
+	}
+	
 	function completeAssignToThis(source) {
-	    this.__proto__ = source.__proto__;
-	    this.prototype = source.prototype;
-	    var descriptors = Object.keys(source).reduce(function (descriptors, key) {
-	        descriptors[key] = Object.getOwnPropertyDescriptor(source, key);
+	    extendThisFromBase.bind(this)(source);
+	    var descriptors = Object.getOwnPropertyNames(source).reduce(function (descriptors, key) {
+	        if (key != 'constructor') descriptors[key] = Object.getOwnPropertyDescriptor(source, key);
 	        return descriptors;
 	    }, {});
 	    // by default, Object.assign copies enumerable Symbols too
@@ -812,7 +848,8 @@ module.exports =
 	}
 
 /***/ },
-/* 7 */
+/* 7 */,
+/* 8 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -823,8 +860,9 @@ module.exports =
 	exports.satisfies = satisfies;
 	exports.findSatisfier = findSatisfier;
 	exports.default = resolve;
+	exports.objectContainsOnly = objectContainsOnly;
 	
-	var _getPrototypeChain = __webpack_require__(8);
+	var _getPrototypeChain = __webpack_require__(9);
 	
 	var _getPrototypeChain2 = _interopRequireDefault(_getPrototypeChain);
 	
@@ -862,15 +900,24 @@ module.exports =
 	        return resolved;
 	    }, {});
 	}
+	
+	function objectContainsOnly(_ref4) {
+	    var strictduck = _ref4.strictduck;
+	    var object = _ref4.object;
+	
+	    return Object.keys(object).filter(function (k) {
+	        return !satisfies({ provider: object[k], dependency: strictduck });
+	    }).length == 0;
+	}
 
 /***/ },
-/* 8 */
+/* 9 */
 /***/ function(module, exports) {
 
 	module.exports = require("get-prototype-chain");
 
 /***/ },
-/* 9 */
+/* 10 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -883,7 +930,7 @@ module.exports =
 	
 	exports.default = depends;
 	
-	var _resolve = __webpack_require__(7);
+	var _resolve = __webpack_require__(8);
 	
 	var _resolve2 = _interopRequireDefault(_resolve);
 	
@@ -893,7 +940,7 @@ module.exports =
 	
 	var _utils = __webpack_require__(6);
 	
-	var _getPrototypeChain = __webpack_require__(8);
+	var _getPrototypeChain = __webpack_require__(9);
 	
 	var _getPrototypeChain2 = _interopRequireDefault(_getPrototypeChain);
 	
@@ -947,7 +994,7 @@ module.exports =
 	}
 
 /***/ },
-/* 10 */
+/* 11 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -961,7 +1008,7 @@ module.exports =
 	
 	exports.default = provides;
 	
-	var _bottlejs = __webpack_require__(11);
+	var _bottlejs = __webpack_require__(12);
 	
 	var _bottlejs2 = _interopRequireDefault(_bottlejs);
 	
@@ -973,7 +1020,7 @@ module.exports =
 	
 	var _implement2 = _interopRequireDefault(_implement);
 	
-	var _resolve = __webpack_require__(7);
+	var _resolve = __webpack_require__(8);
 	
 	var _resolve2 = _interopRequireDefault(_resolve);
 	
@@ -1035,104 +1082,10 @@ module.exports =
 	}
 
 /***/ },
-/* 11 */
+/* 12 */
 /***/ function(module, exports) {
 
 	module.exports = require("bottlejs");
-
-/***/ },
-/* 12 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-	
-	Object.defineProperty(exports, "__esModule", {
-	    value: true
-	});
-	
-	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-	
-	var _getPrototypeChain = __webpack_require__(8);
-	
-	var _getPrototypeChain2 = _interopRequireDefault(_getPrototypeChain);
-	
-	var _bottlejs = __webpack_require__(11);
-	
-	var _bottlejs2 = _interopRequireDefault(_bottlejs);
-	
-	var _depends = __webpack_require__(9);
-	
-	var _depends2 = _interopRequireDefault(_depends);
-	
-	var _resolve = __webpack_require__(7);
-	
-	var _resolve2 = _interopRequireDefault(_resolve);
-	
-	var _implement = __webpack_require__(13);
-	
-	var _implement2 = _interopRequireDefault(_implement);
-	
-	var _strictduck = __webpack_require__(4);
-	
-	var _strictduck2 = _interopRequireDefault(_strictduck);
-	
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-	
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-	
-	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-	
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-	
-	function materializer(service) {
-	    return typeof service == 'function' ? function (container) {
-	        return console.log(service) || new service({ container: container });
-	    } : function (_) {
-	        return service;
-	    };
-	}
-	
-	var Composit = function (_StrictDuck) {
-	    _inherits(Composit, _StrictDuck);
-	
-	    function Composit(_ref) {
-	        var _ref$main = _ref.main;
-	        var _ref$main$Class = _ref$main.Class;
-	        var mainClass = _ref$main$Class === undefined ? _strictduck.Main : _ref$main$Class;
-	        var _ref$main$method = _ref$main.method;
-	        var mainMethod = _ref$main$method === undefined ? 'main' : _ref$main$method;
-	
-	        _classCallCheck(this, Composit);
-	
-	        var providerMap = {};
-	
-	        for (var _len = arguments.length, services = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
-	            services[_key - 1] = arguments[_key];
-	        }
-	
-	        var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Composit).call(this, services.reduce(function (context, service) {
-	            var name = service.name || service.constructor.name;
-	            providerMap[name] = service;
-	            context.factory(name, materializer(service));
-	            return context;
-	        }, new _bottlejs2.default())));
-	
-	        _this.value('providers', providerMap);
-	        var mainSatisfier = (0, _resolve.findSatisfier)({ container: _this.container, dependency: mainClass });
-	        _this.main = function (kwargs) {
-	            for (var _len2 = arguments.length, args = Array(_len2 > 1 ? _len2 - 1 : 0), _key2 = 1; _key2 < _len2; _key2++) {
-	                args[_key2 - 1] = arguments[_key2];
-	            }
-	
-	            return mainSatisfier[mainMethod].apply(mainSatisfier, [_extends({ container: _this.container }, kwargs)].concat(args));
-	        };
-	        return _this;
-	    }
-	
-	    return Composit;
-	}(_strictduck2.default);
-	
-	exports.default = (0, _implement2.default)({ strictduck: _strictduck.Main, withClass: Composit });
 
 /***/ },
 /* 13 */
@@ -1188,6 +1141,100 @@ module.exports =
 
 /***/ },
 /* 14 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	
+	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+	
+	var _getPrototypeChain = __webpack_require__(9);
+	
+	var _getPrototypeChain2 = _interopRequireDefault(_getPrototypeChain);
+	
+	var _bottlejs = __webpack_require__(12);
+	
+	var _bottlejs2 = _interopRequireDefault(_bottlejs);
+	
+	var _depends = __webpack_require__(10);
+	
+	var _depends2 = _interopRequireDefault(_depends);
+	
+	var _resolve = __webpack_require__(8);
+	
+	var _resolve2 = _interopRequireDefault(_resolve);
+	
+	var _implement = __webpack_require__(13);
+	
+	var _implement2 = _interopRequireDefault(_implement);
+	
+	var _strictduck = __webpack_require__(4);
+	
+	var _strictduck2 = _interopRequireDefault(_strictduck);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+	
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+	
+	function materializer(service) {
+	    return typeof service == 'function' ? function (container) {
+	        return new service({ container: container });
+	    } : function (_) {
+	        return service;
+	    };
+	}
+	
+	var Composit = function (_StrictDuck) {
+	    _inherits(Composit, _StrictDuck);
+	
+	    function Composit(_ref) {
+	        var _ref$main = _ref.main;
+	        var _ref$main$Class = _ref$main.Class;
+	        var mainClass = _ref$main$Class === undefined ? _strictduck.Main : _ref$main$Class;
+	        var _ref$main$method = _ref$main.method;
+	        var mainMethod = _ref$main$method === undefined ? 'main' : _ref$main$method;
+	
+	        _classCallCheck(this, Composit);
+	
+	        var providerMap = {};
+	
+	        for (var _len = arguments.length, services = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+	            services[_key - 1] = arguments[_key];
+	        }
+	
+	        var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Composit).call(this, services.reduce(function (context, service) {
+	            var name = service.name || service.constructor.name;
+	            providerMap[name] = service;
+	            context.factory(name, materializer(service));
+	            return context;
+	        }, new _bottlejs2.default())));
+	
+	        _this.value('providers', providerMap);
+	        var mainSatisfier = (0, _resolve.findSatisfier)({ container: _this.container, dependency: mainClass });
+	        _this.main = function (kwargs) {
+	            for (var _len2 = arguments.length, args = Array(_len2 > 1 ? _len2 - 1 : 0), _key2 = 1; _key2 < _len2; _key2++) {
+	                args[_key2 - 1] = arguments[_key2];
+	            }
+	
+	            return mainSatisfier[mainMethod].apply(mainSatisfier, [_extends({ container: _this.container }, kwargs)].concat(args));
+	        };
+	        return _this;
+	    }
+	
+	    return Composit;
+	}(_strictduck2.default);
+	
+	exports.default = (0, _implement2.default)({ strictduck: _strictduck.Main, withClass: Composit });
+
+/***/ },
+/* 15 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -1201,6 +1248,120 @@ module.exports =
 	        return fn(Object.assign({}, defaults, overrides));
 	    };
 	}
+
+/***/ },
+/* 16 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	exports.default = typedMap;
+	
+	var _strictduck = __webpack_require__(4);
+	
+	var _resolve = __webpack_require__(8);
+	
+	var _utils = __webpack_require__(6);
+	
+	var _getPrototypeChain = __webpack_require__(9);
+	
+	var _getPrototypeChain2 = _interopRequireDefault(_getPrototypeChain);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+	
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+	
+	function typedMap(_ref) {
+	    var name = _ref.name;
+	    var _ref$strictduck = _ref.strictduck;
+	    var strictduck = _ref$strictduck === undefined ? StrictDuck : _ref$strictduck;
+	
+	    return (0, _utils.nameClass)({
+	        name: name || strictduck.name + 'Map',
+	        Class: function (_extend) {
+	            _inherits(Class, _extend);
+	
+	            function Class(object) {
+	                _classCallCheck(this, Class);
+	
+	                (0, _resolve.objectContainsOnly)({ strictduck: strictduck, object: object });
+	                return _possibleConstructorReturn(this, Object.getPrototypeOf(Class).call(this, object));
+	            }
+	
+	            return Class;
+	        }((0, _strictduck.extend)({ name: 'Map' }))
+	    });
+	}
+
+/***/ },
+/* 17 */
+/***/ function(module, exports) {
+
+	var hasOwnProperty = Object.prototype.hasOwnProperty;
+	
+	var extend = function(){
+	  var base = arguments[0];
+	  var extensions = Array.prototype.slice.call(arguments, 1);
+	
+	  // Object prototype may only be an Object or null
+	  if (typeof base !== 'object') {
+	    base = null;
+	  }
+	
+	  return extensions.reduce(function(base, object){
+	    if (typeof object !== 'object' || object === null) {
+	      return base;
+	    }
+	    return Object.create(base, getOwnPropertyDescriptorMap(object));
+	  }, base);
+	};
+	
+	var getOwnPropertyDescriptorMap = function(object){
+	  var properties = Object.getOwnPropertyNames(object);
+	
+	  return properties.reduce(function(map, property) {
+	    map[property] = Object.getOwnPropertyDescriptor(object, property);
+	    return map;
+	  }, Object.create(null));
+	};
+	
+	var flatten = function(object, base){
+	  if (typeof base === 'undefined') {
+	    base = Object.prototype;
+	  }
+	  return _flatten(object, base, {});
+	}
+	
+	var _flatten = function(object, base, descriptors){
+	  merge(descriptors, getOwnPropertyDescriptorMap(object));
+	
+	  var proto = Object.getPrototypeOf(object);
+	  if (proto === base || proto === null) {
+	    return Object.create(proto, descriptors);
+	  }
+	  return _flatten(proto, base, descriptors);
+	};
+	
+	var merge = function(dest, source) {
+	  Object.keys(source).forEach(function(key) {
+	    if (!hasOwnProperty.call(dest, key)) {
+	      dest[key] = source[key];
+	    }
+	  });
+	  return;
+	};
+	
+	module.exports = extend;
+	module.exports.getOwnPropertyDescriptorMap = getOwnPropertyDescriptorMap;
+	module.exports.flatten = flatten;
+
 
 /***/ }
 /******/ ]);

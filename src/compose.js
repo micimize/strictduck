@@ -7,7 +7,7 @@ import StrictDuck, { Main } from './strictduck'
 
 function materializer(service){
     return (typeof(service) == 'function') ?
-        (container => console.log(service) || new service({container})) :
+        (container => new service({container})) :
         _ => service
 }
 

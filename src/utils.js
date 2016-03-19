@@ -1,8 +1,27 @@
+import getPrototypeChain from 'get-prototype-chain'
+import extend from 'proto-extend'
+
+function extendFromBase(objProto, baseProto){
+    if(Object.getPrototypeOf(objProto) == null || getPrototypeChain(baseProto).indexOf(objProto) > -1){
+        return baseProto
+    } else {
+        Object.setPrototypeOf(objProto, extendFromBase(objProto.__proto__, baseProto))
+        return objProto
+    }
+}
+function extendThisFromBase(base){
+    if (Object.getPrototypeOf(this) != null) {
+        Object.setPrototypeOf(this, extendFromBase(Object.getPrototypeOf(this), Object.getPrototypeOf(base)))
+    } else {
+        Object.setPrototypeOf(this, Object.getPrototypeOf(base))
+    }
+}
+
 export function completeAssignToThis(source) {
-    this.__proto__ = source.__proto__
-    this.prototype = source.prototype
-    let descriptors = Object.keys(source).reduce((descriptors, key) => {
-        descriptors[key] = Object.getOwnPropertyDescriptor(source, key);
+    extendThisFromBase.bind(this)(source)
+    let descriptors = Object.getOwnPropertyNames(source).reduce((descriptors, key) => {
+        if (key != 'constructor')
+            descriptors[key] = Object.getOwnPropertyDescriptor(source, key);
         return descriptors;
     }, {});
     // by default, Object.assign copies enumerable Symbols too

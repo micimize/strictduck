@@ -1,3 +1,4 @@
+import getPrototypeChain from 'get-prototype-chain'
 import Duckface from 'Duckface/src/duckface'
 import { nameClass, completeAssignToThis } from './utils'
 
@@ -10,12 +11,15 @@ export function shouldImplement({
 
 export default class StrictDuck {
     constructor(instance, ...interfaces){
-        completeAssignToThis.bind(this)(instance)
+        let hack = function(){}
+        Object.setPrototypeOf(hack, Object.getPrototypeOf(this))
+        completeAssignToThis.bind(hack)(instance)
         interfaces.forEach(
             i => typeof(i) == 'function' ?
-                i(this) :
-                shouldImplement(i)(this)
+                i(hack) :
+                shouldImplement(i)(hack)
         )
+        return hack
     }
 }
 
