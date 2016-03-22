@@ -6,9 +6,7 @@ import implement from './implement'
 import StrictDuck, { Main } from './strictduck'
 
 function materializer(service){
-    return (typeof(service) == 'function') ?
-        (container => new service({container})) :
-        _ => service
+    return (container => new service({container})) 
 }
 
 class Composit extends StrictDuck {
@@ -16,10 +14,14 @@ class Composit extends StrictDuck {
         let providerMap = {}
         super(
             services.reduce(
-                (context, service) => {
-                    let name = service.name || service.constructor.name
-                    providerMap[name] = service
-                    context.factory(name, materializer(service))
+                (context, {dependency, provider}) => {
+                    let name = provider.name || provider.constructor.name
+                    providerMap[name] = provider
+                    if(provider instanceof dependency) {
+                        context.value(name, provider)
+                    } else {
+                        context.factory(name, materializer(provider))
+                    }
                     return context
                 }
                 , new Bottle()

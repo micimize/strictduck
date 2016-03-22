@@ -16,7 +16,7 @@ export default function provides({
         Class: class extends parent {
             constructor(...args){
                 super(...args)
-                this.provide = function provide({container, ...kwargs}, ...pargs){
+                this.provide = function provide({container, ...kwargs}={container: {}}, ...pargs){
                     return provider.bind(this)({
                         ...resolve({container, dependencies}),
                         ...kwargs

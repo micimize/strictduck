@@ -34,9 +34,13 @@ export function completeAssignToThis(source) {
     Object.defineProperties(this, descriptors);
 }
 
+export function nameObj({name, object}){
+    let dict = {}
+    dict[name] = object
+    Object.defineProperty(dict[name], 'name', {value: name})
+    return dict[name]
+}
+
 export function nameClass({name, Class}){
-    let classDict = {}
-    classDict[name] = Class
-    Object.defineProperty(classDict[name], 'name', {value: name})
-    return classDict[name]
+    return nameObj({name, object: Class})
 }
