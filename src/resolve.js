@@ -1,8 +1,6 @@
 import getPrototypeChain from 'get-prototype-chain'
 
 export function satisfies({provider, dependency}){
-    //console.log(getPrototypeChain(provider), dependency, getPrototypeChain(provider).filter(p => p == dependency))
-
     return getPrototypeChain(provider)
         .filter(p => p == dependency || p instanceof dependency || p.constructor.name == dependency).length > 0
 }

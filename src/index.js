@@ -11,3 +11,5 @@ export implementable from './implementable'
 
 export typedMap from './typedMap'
 
+export * as utils from './utils'
+

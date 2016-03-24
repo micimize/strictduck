@@ -14,7 +14,7 @@ function firstToLowerCase( str ) {
 }
 export default class StrictDuck {
     constructor(instance, ...interfaces){
-        let hack = function(){}
+        let hack = typeof(instance) == 'function' ? function(){} : new Object()
         Object.setPrototypeOf(hack, Object.getPrototypeOf(this))
         completeAssignToThis.bind(hack)(instance)
         interfaces.forEach(

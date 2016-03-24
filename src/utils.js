@@ -37,7 +37,9 @@ export function completeAssignToThis(source) {
 export function nameObj({name, object}){
     let dict = {}
     dict[name] = object
-    Object.defineProperty(dict[name], 'name', {value: name})
+    Object.defineProperty(dict[name], 'name', {
+        configurable: true, value: name
+    })
     return dict[name]
 }
 
