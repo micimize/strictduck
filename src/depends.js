@@ -13,7 +13,8 @@ export default function depends({
             constructor({container, ...rest}){
                 super(...c({
                     ...resolve({container, dependencies}),
-                    ...rest
+                    ...rest,
+                    container
                 }))
             }
         }
