@@ -5,8 +5,8 @@
   "main": "dist/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" &&   exit 1",
-    "dist": "node-simple-webpacker --task dist --entry ./src/index.js --out ./dist/index.js",
-    "watch-and-dist": "node-simple-webpacker --entry ./src/index.js --out ./dist/index.js"
+    "dist": "polypacker --entry ./src/index.js --out ./dist/index.js",
+    "watch": "polypacker --watch --entry ./src/index.js --out ./dist/index.js"
   },
   "repository": {
     "type": "git",
@@ -29,6 +29,6 @@
     "proto-extend": "^1.0.0"
   },
   "devDependencies": {
-    "node-simple-webpacker": "github:michaeljosephrosenthal/node-simple-webpacker"
+    "polypacker": "github:michaeljosephrosenthal/polypacker"
   }
 }
