@@ -5,7 +5,7 @@
   "main": "dist/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" &&   exit 1",
-    "dist": "polypacker --entry ./src/index.js --out ./dist/index.js",
+    "dist": "polypacker --entry ./src/index.js --out ./dist/index.js --env PRODUCTION",
     "watch": "polypacker --watch --entry ./src/index.js --out ./dist/index.js"
   },
   "repository": {
@@ -26,7 +26,8 @@
     "bottlejs": "^1.2.3",
     "flatten-prototypes": "^4.0.0",
     "get-prototype-chain": "^1.0.1",
-    "proto-extend": "^1.0.0"
+    "proto-extend": "^1.0.0",
+    "source-map-support": "^0.4.0"
   },
   "devDependencies": {
     "polypacker": "github:michaeljosephrosenthal/polypacker"
