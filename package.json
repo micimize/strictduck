@@ -1,7 +1,7 @@
 {
   "name": "strictduck",
   "version": "0.0.1",
-  "description": "strictduck is basically just a stub",
+  "description": "A set of tools for building \"intelligent\" javascript code bases",
   "main": "dist/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" &&   exit 1",
@@ -13,7 +13,7 @@
     "url": "git+https://github.com/strictduck/strictduck.git"
   },
   "author": "Michael Joseph Rosenthal <rosenthalm93@gmail.com>",
-  "license": "Apache-2.0",
+  "license": "MIT",
   "engines": {
     "node": ">=v5.4.1 <6.0"
   },
@@ -30,6 +30,6 @@
     "source-map-support": "^0.4.0"
   },
   "devDependencies": {
-    "polypacker": "github:michaeljosephrosenthal/polypacker"
+    "polypacker": "0.1.0"
   }
 }
