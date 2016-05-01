@@ -1,6 +1,6 @@
 import getPrototypeChain from 'get-prototype-chain'
 import Duckface from 'Duckface/src/duckface'
-import { nameClass, nameObj, completeAssignToThis } from './utils'
+import { id, nameClass, nameObj, completeAssignToThis } from './utils'
 
 export function shouldImplement({
     name = 'strictduckInterface', methods = []
@@ -12,22 +12,25 @@ export function shouldImplement({
 function firstToLowerCase( str ) {
     return str.substr(0, 1).toLowerCase() + str.substr(1);
 }
+
 export default class StrictDuck {
     constructor(instance, ...interfaces){
-        let hack = typeof(instance) == 'function' ? function(){} : new Object()
-        Object.setPrototypeOf(hack, Object.getPrototypeOf(this))
-        completeAssignToThis.bind(hack)(instance)
+        let copy = typeof(instance) == 'function' ? function(){} : new Object()
+        Object.setPrototypeOf(copy, Object.getPrototypeOf(this))
+        completeAssignToThis.bind(copy)(instance)
         interfaces.forEach(
             i => typeof(i) == 'function' ?
-                i(hack) :
-                shouldImplement(i)(hack)
+                i(copy) :
+                shouldImplement(i)(copy)
         )
         return nameObj({
             name: firstToLowerCase(Object.getPrototypeOf(this).constructor.name),
-            object: hack
+            object: copy
         })
     }
 }
+
+StrictDuck[id] = Symbol('StrictDuck')
 
 export function extend({
     name, parent=StrictDuck, interfaces=[], methods=[]

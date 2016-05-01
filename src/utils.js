@@ -1,6 +1,12 @@
 import getPrototypeChain from 'get-prototype-chain'
 import extend from 'proto-extend'
 
+export const id = Symbol('strictduck.id')
+
+export function equals(duckA, duckB){
+    return duckA[id] && duckB[id] && duckA[id] == duckB[id]
+}
+
 function extendFromBase(objProto, baseProto){
     if(Object.getPrototypeOf(objProto) == null || getPrototypeChain(baseProto).indexOf(objProto) > -1){
         return baseProto
@@ -43,6 +49,7 @@ export function nameObj({name, object}){
     return dict[name]
 }
 
-export function nameClass({name, Class}){
+export function nameClass({name, Class, idSymbol = id}){
+    Class[idSymbol] = Symbol(name)
     return nameObj({name, object: Class})
 }
