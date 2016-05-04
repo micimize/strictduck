@@ -1,6 +1,6 @@
 {
   "name": "strictduck",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "A set of tools for building intelligent javascript code bases",
   "main": "dist/index.js",
   "scripts": {
@@ -22,13 +22,10 @@
   "homepage": "https://github.com/strictduck/strictduck#readme",
   "dependencies": {
     "Duckface": "github:openraffler/duckface.js#1df788cdf9dfed86d601230f21ad9028f6c7c667",
-    "bottlejs": "^1.2.3",
-    "flatten-prototypes": "^4.0.0",
     "get-prototype-chain": "^1.0.1",
-    "proto-extend": "^1.0.0",
-    "source-map-support": "^0.4.0"
+    "proto-extend": "^1.0.0"
   },
   "devDependencies": {
-    "polypacker": "0.1.1"
+    "polypacker": "0.1.4"
   }
 }

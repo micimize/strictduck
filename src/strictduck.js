@@ -1,4 +1,3 @@
-import getPrototypeChain from 'get-prototype-chain'
 import Duckface from 'Duckface/src/duckface'
 import { id, nameClass, nameObj, completeAssignToThis } from './utils'
 
