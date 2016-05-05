@@ -16,7 +16,7 @@ export const Main = extend({ name: 'Main', methods: ['main'] })
 ```
 
 #### identity and equality helpers
-exports  [`id`, `equals`, and, `is`](strictduck/strictduck/blob/master/src/utils.js#L4-L14) are used for identifying strictducks (every StrictDuck class has `id` as a key) and comparing them.
+exports  [`id`, `equals`, and `is`](strictduck/strictduck/blob/master/src/utils.js#L4-L14) are used for identifying strictducks (every StrictDuck class has `id` as a key) and comparing them.
 ```javascript
 import {Main, equals, is}
 let instance = new Main(mainObj)
