@@ -7,10 +7,10 @@ StrictDuck is a retroactive inheritance system for javascript. It aims to solve 
 The `default` export is the [`StrictDuck`](https://github.com/strictduck/strictduck/blob/master/src/strictduck.js#L15-L30) class, which all StrictDucks inherit from.
 `StrictDuck` does the following:   
   \* assigns the first argument to the new instance   
-  \* levearges [duckface](https://github.com/openraffler/duckface.js) to ensure the new instance [implements](https://github.com/strictduck/strictduck/blob/master/src/strictduck.js#L4-L9) the interfaces specified in the rest of the arguments  
+  \* leverages [duckface](https://github.com/openraffler/duckface.js) to ensure the new instance [implements](https://github.com/strictduck/strictduck/blob/master/src/strictduck.js#L4-L9) the interfaces specified in the rest of the arguments  
   \* assigns the object the key `{ [Symbol('strictduck.id')] : Symbol(strictDuckClassName) }`, giving us a more dependable way to identify object inheritance  
 
-Another key export is [`extend`](https://github.com/strictduck/strictduck/blob/master/src/strictduck.js#L34-L48), which is used for tersly specifying StrictDucks, such as the [`Main`](https://github.com/strictduck/strictduck/blob/master/src/strictduck.js#L50) export:
+Another key export is [`extend`](https://github.com/strictduck/strictduck/blob/master/src/strictduck.js#L34-L48), which is used for tersely specifying StrictDucks, such as the [`Main`](https://github.com/strictduck/strictduck/blob/master/src/strictduck.js#L50) export:
 ```javascript
 export const Main = extend({ name: 'Main', methods: ['main'] })
 ```
@@ -18,7 +18,7 @@ export const Main = extend({ name: 'Main', methods: ['main'] })
 #### identity and equality helpers
 exports  [`id`, `equals`, and `is`](https://github.com/strictduck/strictduck/blob/master/src/utils.js#L4-L14) are used for identifying strictducks (every StrictDuck class has `id` as a key) and comparing them.
 ```javascript
-import {Main, equals, is}
+import {Main, equals, is} from 'strictduck'
 let instance = new Main(mainObj)
 equals(instance.prototype, Main) == true
 is({instance, Class: Main}) == true
