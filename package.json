@@ -1,6 +1,6 @@
 {
   "name": "strictduck",
-  "version": "0.1.3",
+  "version": "0.1.3-alpha-1",
   "description": "A set of tools for building intelligent javascript code bases",
   "main": "dist/index.js",
   "scripts": {

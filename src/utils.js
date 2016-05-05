@@ -7,6 +7,12 @@ export function equals(duckA, duckB){
     return duckA[id] && duckB[id] && duckA[id] == duckB[id]
 }
 
+export function is({instance, Class}){
+    return getPrototypeChain(instance)
+        .filter(p => ( equals(p, Class) ))
+        .length > 0
+}
+
 function extendFromBase(objProto, baseProto){
     if(Object.getPrototypeOf(objProto) == null || getPrototypeChain(baseProto).indexOf(objProto) > -1){
         return baseProto

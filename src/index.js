@@ -5,4 +5,5 @@ export implement from './implement'
 export implementable from './implementable'
 
 export * as utils from './utils'
+export { id, equals } from './utils'
 
