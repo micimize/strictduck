@@ -1,5 +1,6 @@
 import Duckface from 'Duckface/src/duckface'
-import { id, nameClass, nameObj, completeAssignToThis } from './utils'
+import getPrototypeChain from 'get-prototype-chain'
+import { id, baseId, nameClass, nameObj, completeAssignToThis } from './utils'
 
 export function shouldImplement({
     name = 'strictduckInterface', methods = []
@@ -29,7 +30,8 @@ export default class StrictDuck {
     }
 }
 
-StrictDuck[id] = Symbol('StrictDuck')
+StrictDuck[id] = baseId
+StrictDuck.prototype[id] = baseId
 
 export function extend({
     name, parent=StrictDuck, interfaces=[], methods=[]

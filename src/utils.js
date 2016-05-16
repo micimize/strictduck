@@ -1,7 +1,8 @@
 import getPrototypeChain from 'get-prototype-chain'
 import extend from 'proto-extend'
 
-export const id = Symbol('strictduck.id')
+export const id = Symbol.for('strictduck/id')
+export const baseId = Symbol.for('strictduck')
 
 export function equals(duckA, duckB){
     return duckA[id] && duckB[id] && duckA[id] == duckB[id]
@@ -11,6 +12,10 @@ export function is({instance, Class}){
     return getPrototypeChain(instance)
         .filter(p => ( equals(p, Class) ))
         .length > 0
+}
+
+export function getIdChain(duck){
+    return getPrototypeChain(duck).map(p => p[id])
 }
 
 function extendFromBase(objProto, baseProto){
@@ -55,7 +60,20 @@ export function nameObj({name, object}){
     return dict[name]
 }
 
-export function nameClass({name, Class, idSymbol = id}){
-    Class[idSymbol] = Symbol(name)
+function parentId({Class}){
+    return (Class.prototype || {})[id] || baseId
+}
+
+function extendParentSymbolFor({Class, name}){
+     let parentPath = Symbol.keyFor(
+         parentId({Class})
+    )
+    return Symbol.for(name ? `${parentPath}.${name}` : parentPath)
+}
+
+export function nameClass({name, Class}){
+    let symbol = extendParentSymbolFor({name, Class})
+    Class[id] = symbol
+    Class.prototype[id] = symbol
     return nameObj({name, object: Class})
 }
