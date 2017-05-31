@@ -23,7 +23,8 @@
   "dependencies": {
     "Duckface": "github:openraffler/duckface.js#1df788cdf9dfed86d601230f21ad9028f6c7c667",
     "get-prototype-chain": "^1.0.1",
-    "proto-extend": "^1.0.0"
+    "proto-extend": "^1.0.0",
+    "tcomb": "^3.2.14"
   },
   "devDependencies": {
     "polypacker": "0.1.8"
